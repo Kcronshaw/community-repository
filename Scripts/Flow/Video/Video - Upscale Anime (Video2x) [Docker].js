@@ -1,16 +1,19 @@
 /**
- * @author reven
- * @uid ebbea155-596c-4be9-93bf-24858f6b0765
- * @revision 4
  * @description Upscales anime using Video2x inside a docker container. Requires TempPathHost environment variable to be set if running inside a docker container
- * @param {int} Height The height of the video, e.g 720, 1080
- * @param {int} Processes The number of processes to use, if in doubt, set this to 1
+ * @author reven | Kamba
+ * @uid ebbea155-596c-4be9-93bf-24858f6b0765
+ * @revision 6
+ * @param {int} UpscalingFactor The upscaling factor. If set to 4 it means any input file is upscaled to 4K
+ * @param {int} Processes The number of processes to use, if in doubt, set this to 1]
+ * @param {('waifu2x_caffe'|'waifu2x_converter_cpp'|'waifu2x_ncnn_vulkan'|'srmd_ncnn_vulkan'|'realsr_ncnn_vulkan'|'anime4kcpp')} Upscaler Select which Upscaler model to use (anime4kcpp might not work atm)
  * @output file was upscaled
  */
- function Script(Height, Processes)
+function Script(UpscalingFactor, Processes, Upscaler)
  {
     if(Processes < 1)
         Processes = 1;
+    if(UpscalingFactor < 1)
+        UpscalingFactor = 1;
 
     // copy the file into temporary directory
     let wf = Flow.CopyToTemp();
@@ -29,22 +32,17 @@
             '--rm',
             '--privileged',
             '--gpus',
-            'all,"capabilities=compute,utility,graphics,display"',
-            //'all',
-            '--env',
-            'DISPLAY:$DISPLAY',
+            'all',
             '-v',
             tempPath + ':/host',
             '-v',
             tempPath + ':/tmp',
-            'ghcr.io/k4yt3x/video2x:5.0.0-beta6',
+            'k4yt3x/video2x:latest',
             '-i', '/host/' + shortFile,
             '-o', '/host/' + output,
-            '-p' + Processes, 
-            'upscale',
-            '-h', '' + Height,
-            '-a', 'waifu2x',
-            '-n3'
+            '-p', '' + Processes,
+            '-r', '' + UpscalingFactor,
+            '-d', Upscaler,
         ]
     });
 
