@@ -1,6 +1,7 @@
 /**
  * @description Upscales anime using Video2x inside a docker container. Requires TempPathHost environment variable to be set if running inside a docker container
  * @author reven | Kamba
+ * @uid ebbea155-596c-4be9-93bf-24858f6b0765
  * @revision 6
  * @param {int} UpscalingFactor The upscaling factor. If set to 4 it means any input file is upscaled to 4K
  * @param {int} Processes The number of processes to use, if in doubt, set this to 1]
